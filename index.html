@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1976d2"><link rel="manifest" href="manifest.json"><title>My Excel</title>
+<style>
+body{margin:0;font-family:Arial;background:#f5f7fa}header{background:#1976d2;color:white;padding:12px;font-size:20px;font-weight:bold}
+.toolbar{padding:8px;background:white;display:flex;gap:6px;overflow:auto}button{padding:9px;border:0;border-radius:6px;background:#1976d2;color:white}
+.wrap{overflow:auto;height:calc(100vh - 100px)}table{border-collapse:collapse;min-width:1000px;background:white}th,td{border:1px solid #ccc;min-width:75px;height:30px;padding:4px}th{background:#eee}td:focus{outline:2px solid #1976d2}
+</style></head><body><header>📊 My Excel</header>
+<div class="toolbar"><button onclick="newSheet()">নতুন</button><button onclick="save()">Save</button><button onclick="exportCSV()">CSV</button></div>
+<div class="wrap"><table id="t"></table></div>
+<script>
+const R=40,C=15;let d=JSON.parse(localStorage.getItem('myexcel')||'null')||Array.from({length:R},()=>Array(C).fill(''));
+function render(){let t=document.getElementById('t');t.innerHTML='<tr><th>#</th>'+Array.from({length:C},(_,i)=>'<th>'+String.fromCharCode(65+i)+'</th>').join('')+'</tr>';
+for(let r=0;r<R;r++){let tr=document.createElement('tr');tr.innerHTML='<th>'+(r+1)+'</th>';for(let c=0;c<C;c++){let td=document.createElement('td');td.contentEditable=true;td.textContent=d[r][c];td.oninput=()=>{d[r][c]=td.textContent;localStorage.setItem('myexcel',JSON.stringify(d))};tr.appendChild(td)}t.appendChild(tr)}}
+function save(){localStorage.setItem('myexcel',JSON.stringify(d));alert('সংরক্ষণ হয়েছে')}
+function newSheet(){if(confirm('সব তথ্য মুছে ফেলবেন?')){d=Array.from({length:R},()=>Array(C).fill(''));save();render()}}
+function exportCSV(){let s=d.map(x=>x.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([s],{type:'text/csv'}));a.download='myexcel.csv';a.click()}
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');render();
+</script></body></html>
